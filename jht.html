@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>The Most Beautiful Girl</title>
+		<style>
+			html {
+			background: linear-gradient(#997d94 10%,pink);
+			height: 100%;
+			color: #99cc33;
+			font-family: Arial, sans-serif;
+			overflow: hidden;
+		}
+
+		body {
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			perspective: 1200px; /* 增强3D效果 */
+		}
+
+		.hovertreeinfo {
+			text-align: center;
+			padding: 20px 0;
+			position: relative;
+			z-index: 10;
+		}
+
+		.hovertreeinfo a {
+			color: white;
+			text-decoration: none;
+		}
+
+		/* 最外层容器样式 */
+		.wrap {
+			width: 200px;
+			height: 200px;
+			margin: 100px auto;
+			position: relative;
+		}
+
+		/* 包裹所有容器样式 */
+		.cube {
+			width: 200px;
+			height: 200px;
+			margin: 0 auto;
+			transform-style: preserve-3d;
+			transform: rotateX(-30deg) rotateY(-80deg);
+			animation: rotate 20s infinite linear;
+			position: relative;
+		}
+
+		@keyframes rotate {
+			from { transform: rotateX(0deg) rotateY(0deg); }
+			to { transform: rotateX(360deg) rotateY(360deg); }
+		}
+
+		.cube div {
+			position: absolute;
+			width: 200px;
+			height: 200px;
+			opacity: 0.9;
+			transition: all 0.4s;
+			backface-visibility: visible;
+			box-sizing: border-box;
+			border: 2px solid rgba(255, 255, 255, 0.3);
+		}
+
+		/* 图片通用样式 */
+		.pic {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			display: block;
+			transition: transform 0.3s ease;
+		}
+
+		/* 立方体各面定位 */
+		.cube .out_front {
+			transform: rotateY(0deg) translateZ(100px);
+			background: rgba(255, 0, 0, 0.1);
+		}
+
+		.cube .out_back {
+			transform: translateZ(-100px) rotateY(180deg);
+			background: rgba(0, 255, 0, 0.1);
+		}
+
+		.cube .out_left {
+			transform: rotateY(90deg) translateZ(100px);
+			background: rgba(0, 0, 255, 0.1);
+		}
+
+		.cube .out_right {
+			transform: rotateY(-90deg) translateZ(100px);
+			background: rgba(255, 255, 0, 0.1);
+		}
+
+		.cube .out_top {
+			transform: rotateX(90deg) translateZ(100px);
+			background: rgba(255, 0, 255, 0.1);
+		}
+
+		.cube .out_bottom {
+			transform: rotateX(-90deg) translateZ(100px);
+			background: rgba(0, 255, 255, 0.1);
+		}
+
+		/* 小立方体样式 */
+		.cube span {
+			display: block;
+			width: 100px;
+			height: 100px;
+			position: absolute;
+			top: 50px;
+			left: 50px;
+			opacity: 0.9;
+			transition: all 0.4s;
+			backface-visibility: visible;
+			box-sizing: border-box;
+			border: 1px solid rgba(255, 255, 255, 0.2);
+		}
+
+		.in_pic {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			display: block;
+			transition: transform 0.3s ease;
+		}
+
+		/* 小立方体各面定位 */
+		.cube .in_front {
+			transform: rotateY(0deg) translateZ(50px);
+		}
+
+		.cube .in_back {
+			transform: translateZ(-50px) rotateY(180deg);
+		}
+
+		.cube .in_left {
+			transform: rotateY(90deg) translateZ(50px);
+		}
+
+		.cube .in_right {
+			transform: rotateY(-90deg) translateZ(50px);
+		}
+
+		.cube .in_top {
+			transform: rotateX(90deg) translateZ(50px);
+		}
+
+		.cube .in_bottom {
+			transform: rotateX(-90deg) translateZ(50px);
+		}
+
+		/* 鼠标悬停效果 */
+		.cube:hover .out_front {
+			transform: rotateY(0deg) translateZ(150px);
+		}
+
+		.cube:hover .out_back {
+			transform: translateZ(-150px) rotateY(180deg);
+		}
+
+		.cube:hover .out_left {
+			transform: rotateY(90deg) translateZ(150px);
+		}
+
+		.cube:hover .out_right {
+			transform: rotateY(-90deg) translateZ(150px);
+		}
+
+		.cube:hover .out_top {
+			transform: rotateX(90deg) translateZ(150px);
+		}
+
+		.cube:hover .out_bottom {
+			transform: rotateX(-90deg) translateZ(150px);
+		}
+
+		.cube:hover .pic, 
+		.cube:hover .in_pic {
+			transform: scale(1.05);
+		}
+
+		/* 音乐播放器样式 */
+		.music-player {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			z-index: 100;
+			background: rgba(0, 0, 0, 0.5);
+			border-radius: 10px;
+			padding: 10px;
+		}
+
+		.local-music {
+			position: fixed;
+			bottom: 20px;
+			left: 20px;
+			z-index: 100;
+			background: rgba(0, 0, 0, 0.5);
+			border-radius: 10px;
+			padding: 10px;
+			color: white;
+		}
+
+		/* 响应式设计 */
+		@media (max-width: 768px) {
+    
+    .wrap {
+        width: 150px;
+        height: 150px;
+        margin: 80px auto;
+    }
+    
+    .cube {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .cube div {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .cube .out_front {
+        transform: rotateY(0deg) translateZ(75px);
+    }
+    
+    .cube .out_back {
+        transform: translateZ(-75px) rotateY(180deg);
+    }
+    
+    .cube .out_left {
+        transform: rotateY(90deg) translateZ(75px);
+    }
+    
+    .cube .out_right {
+        transform: rotateY(-90deg) translateZ(75px);
+    }
+    
+    .cube .out_top {
+        transform: rotateX(90deg) translateZ(75px);
+    }
+    
+    .cube .out_bottom {
+        transform: rotateX(-90deg) translateZ(75px);
+    }
+    
+    .cube span {
+        width: 75px;
+        height: 75px;
+        top: 37.5px;
+        left: 37.5px;
+    }
+    
+    .cube .in_front {
+        transform: rotateY(0deg) translateZ(37.5px);
+    }
+    
+    .cube .in_back {
+        transform: translateZ(-37.5px) rotateY(180deg);
+    }
+    
+    .cube .in_left {
+        transform: rotateY(90deg) translateZ(37.5px);
+    }
+    
+    .cube .in_right {
+        transform: rotateY(-90deg) translateZ(37.5px);
+    }
+    
+    .cube .in_top {
+        transform: rotateX(90deg) translateZ(37.5px);
+    }
+    
+    .cube .in_bottom {
+        transform: rotateX(-90deg) translateZ(37.5px);
+    }
+    
+    .music-player, 
+    .local-music {
+        width: 90%;
+        left: 5%;
+        right: auto;
+    }
+    
+    .local-music {
+        bottom: 80px;
+    }
+	/* 新增文本容器样式 */
+	.text-container {
+		position: relative;
+		width: 100%;
+		margin-top: 80px; /* 控制标题整体下移 */
+		margin-bottom: 40px;
+	}
+
+	
+}
+
+/* 图片加载动画 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.pic, .in_pic {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+		</style>
+	</head>
+	<body>
+		 <!-- 修改：添加Canvas容器 -->
+		    <div class="text-container">
+		        <div class="hovertreeinfo">
+		            <h1 style="margin-left: 1000px; width: 500px;"></h1>
+		            <canvas id="text-canvas"></canvas>
+		        </div>
+		    </div>
+		<!--/*外层最大容器*/-->
+		<div class="wrap">
+			<!--	/*包裹所有元素的容器*/-->
+			<div class="cube">
+				<!--前面图片 -->
+				<div class="out_front">
+					<img src="image/jht.jpg" class="pic" />
+				</div>
+				<!--后面图片 -->
+				<div class="out_back">
+					<img src="image/jht2.jpg" class="pic"/>
+				</div>
+				<!--左图片 -->
+				<div class="out_left">
+					<img src="image/jht3.jpg" class="pic" />
+				</div>
+				<div class="out_right">
+					<img src="image/jht4.jpg" class="pic" />
+				</div>
+				<div class="out_top">
+					<img src="image/jht5.jpg" class="pic" />
+				</div>
+				<div class="out_bottom">
+					<img src="image/jht6.jpg" class="pic" />
+				</div>
+				<!--小正方体 -->
+				<span class="in_front">
+					<img src="image/jht7.jpg" class="in_pic" />
+				</span>
+				<span class="in_back">
+					<img src="image/jht8.jpg class="in_pic" />
+				</span>
+				<span class="in_left">
+					<img src="image/jht9.jpg" class="in_pic" />
+				</span>
+				<span class="in_right">
+					<img src="image/jht10.jpg" class="in_pic" />
+				</span>
+				<span class="in_top">
+					<img src="image/jht11.jpg" class="in_pic" />
+				</span>
+				<span class="in_bottom">
+					<img src="image/jht12.jpg" class="in_pic" />
+				</span>
+			</div>
+		</div>
+		<!-- 网易云外链音 乐 -->
+		<!-- 只有发布和编译到端口才会自动播放 -->
+		<div style="position:absolute;right:0px;bottom:0px;">
+			<iframe frameborder="no" border="0" marginwidth="0" marginheight="100%" width=330 height=86 
+				src="//music.163.com/outchain/player?type=2&id=1370748318&auto=1&height=66"></iframe>
+		</div>
+		<!-- 本地音乐，双击index.html -->
+		<div style="position:absolute;left:0px;bottom:0px;">
+			<!-- 隐藏播放条：删除ontrols="controls"部分 -->
+			<audio autoplay="autopaly" loop="loop" controls="controls" id="audios">
+				<source src="music/qianyuqianxun.mp3" type="audio/mp3" />
+			</audio>
+		</div>
+		<script>
+			 // 确保DOM加载完成后再执行
+				document.addEventListener('DOMContentLoaded', function() {
+				const canvas = document.getElementById('text-canvas');
+				const ctx = canvas.getContext('2d');
+				const h1 = document.querySelector('.hovertreeinfo h1');
+				
+				// 设置canvas尺寸
+				function resizeCanvas() {
+				    // 增加边距确保完整显示
+				    canvas.width = h1.offsetWidth + 150;
+				    canvas.height = h1.offsetHeight + 60;
+				    
+				    // 精确定位
+				    const h1Rect = h1.getBoundingClientRect();
+				    canvas.style.top = `${h1Rect.top + h1Rect.height/2 + window.scrollY}px`;
+				    canvas.style.left = `${h1Rect.left + h1Rect.width/2}px`;
+				}
+				
+				// 获取彩虹颜色
+				function getRainbowColor(offset) {
+					const colors = [
+						'#ff0000', '#ff7f00', '#ffff00', 
+						'#00ff00', '#0000ff', '#4b0082', '#9400d3'
+					];
+					const index = Math.floor(offset) % colors.length;
+					const nextIndex = (index + 1) % colors.length;
+					const ratio = offset - Math.floor(offset);
+					
+					const r1 = parseInt(colors[index].substr(1, 2), 16);
+					const g1 = parseInt(colors[index].substr(3, 2), 16);
+					const b1 = parseInt(colors[index].substr(5, 2), 16);
+					
+					const r2 = parseInt(colors[nextIndex].substr(1, 2), 16);
+					const g2 = parseInt(colors[nextIndex].substr(3, 2), 16);
+					const b2 = parseInt(colors[nextIndex].substr(5, 2), 16);
+					
+					const r = Math.floor(r1 + (r2 - r1) * ratio);
+					const g = Math.floor(g1 + (g2 - g1) * ratio);
+					const b = Math.floor(b1 + (b2 - b1) * ratio);
+					
+					return `rgb(${r},${g},${b})`;
+				}
+				
+				let colorOffset = 0;
+				let gradientOffset = 0;
+				
+				function drawText() {
+					// 清除画布
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					
+					// 绘制静态炫彩文字
+					ctx.font = 'bold 60px Arial';
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					
+					// 创建静态渐变
+					const staticGradient = ctx.createLinearGradient(
+						0, canvas.height/2, 
+						canvas.width, canvas.height/2
+					);
+					
+					// 添加彩虹色渐变
+					staticGradient.addColorStop(0, getRainbowColor(colorOffset));
+					staticGradient.addColorStop(0.2, getRainbowColor(colorOffset + 1));
+					staticGradient.addColorStop(0.4, getRainbowColor(colorOffset + 2));
+					staticGradient.addColorStop(0.6, getRainbowColor(colorOffset + 3));
+					staticGradient.addColorStop(0.8, getRainbowColor(colorOffset + 4));
+					staticGradient.addColorStop(1, getRainbowColor(colorOffset + 5));
+					
+					ctx.fillStyle = staticGradient;
+					ctx.fillText('最美丽的女孩', canvas.width/2, canvas.height/2);
+					
+					// 绘制移动的炫彩流光效果
+					const movingGradient = ctx.createLinearGradient(
+						gradientOffset - 150, canvas.height/2 - 30,
+						gradientOffset + 150, canvas.height/2 + 30
+					);
+					
+					movingGradient.addColorStop(0, 'rgba(255,255,255,0)');
+					movingGradient.addColorStop(0.3, '#ffffff');
+					movingGradient.addColorStop(0.5, 'rgba(255,255,255,0.8)');
+					movingGradient.addColorStop(0.7, '#ffffff');
+					movingGradient.addColorStop(1, 'rgba(255,255,255,0)');
+					
+					ctx.save();
+					ctx.globalCompositeOperation = 'overlay';
+					ctx.fillStyle = movingGradient;
+					ctx.fillText('最美丽的女孩', canvas.width/2, canvas.height/2);
+					ctx.restore();
+					
+					// 更新颜色偏移
+					colorOffset += 0.01;
+					
+					// 更新流光位置
+					gradientOffset = (gradientOffset + 3) % (canvas.width + 300);
+					
+					requestAnimationFrame(drawText);
+				}
+				
+				// 初始化
+				resizeCanvas();
+				drawText();
+				
+				window.addEventListener('resize', function() {
+					resizeCanvas();
+				});
+			});
+			var music = document.getElementById('video');
+			var state = 0;
+			document.addEventListener('touchstart', function(){    
+				  if(state==0){        
+					  music.play();        
+					  state=1;    
+				  }  
+			  }, false);
+			document.addEventListener("WeixinJSBridgeReady", function () {    
+				  music.play();
+			  }, false);  
+			//循环播放
+			music.onended = function () {    
+				music.load();    
+				music.play();
+			}
+			
+		</script>
+	</body>
+</html>

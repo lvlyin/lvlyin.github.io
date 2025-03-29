@@ -1,0 +1,489 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+ <HEAD>
+  <TITLE>I LOVE YOU</TITLE>
+  <META NAME="Generator" CONTENT="EditPlus">
+  <META NAME="Author" CONTENT="">
+  <META NAME="Keywords" CONTENT="">
+  <META NAME="Description" CONTENT="">
+  <style>
+  html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+  
+  /* 添加背景图片样式 */
+  body {
+    background: url('image/jht.jpg') no-repeat center center fixed;
+    background-size: cover;
+  }
+  
+  canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* 调整遮罩透明度 */
+  #matrix-rain {
+    opacity: 0.7; /* 适当提高矩阵雨的透明度 */
+  }
+  
+  #pinkboard {
+    background-color: rgba(0, 0, 0, 0.1); /* 适当提高爱心粒子背景的透明度 */
+  }
+  </style>
+ </HEAD>
+ 
+ <BODY>
+  <canvas id="matrix-rain"></canvas>
+  <canvas id="pinkboard"></canvas>
+  
+  <script>
+  /*
+   * 全局变量和函数
+   */
+  var colorOffset = 0;
+  var gradientOffsets = [0, 0, 0]; // 用于不同元素的流光位置
+  
+  // 获取彩虹颜色
+  function getRainbowColor(offset) {
+    const colors = [
+      '#ff0000', '#ff7f00', '#ffff00', 
+      '#00ff00', '#0000ff', '#4b0082', '#9400d3'
+    ];
+    const index = Math.floor(offset) % colors.length;
+    const nextIndex = (index + 1) % colors.length;
+    const ratio = offset - Math.floor(offset);
+    
+    const r1 = parseInt(colors[index].substr(1, 2), 16);
+    const g1 = parseInt(colors[index].substr(3, 2), 16);
+    const b1 = parseInt(colors[index].substr(5, 2), 16);
+    
+    const r2 = parseInt(colors[nextIndex].substr(1, 2), 16);
+    const g2 = parseInt(colors[nextIndex].substr(3, 2), 16);
+    const b2 = parseInt(colors[nextIndex].substr(5, 2), 16);
+    
+    const r = Math.floor(r1 + (r2 - r1) * ratio);
+    const g = Math.floor(g1 + (g2 - g1) * ratio);
+    const b = Math.floor(b1 + (b2 - b1) * ratio);
+    
+    return `rgb(${r},${g},${b})`;
+  }
+  
+  /*
+   * 矩阵雨效果代码 - 调整透明度版本
+   */
+  var matrixCanvas = document.getElementById("matrix-rain");
+  var matrixCtx = matrixCanvas.getContext("2d");
+  matrixCanvas.width = window.innerWidth;
+  matrixCanvas.height = window.innerHeight;
+  var string1 = "江慧甜LOVE";
+  var chars = string1.split("");
+  var fontsize = 20;
+  var columns = matrixCanvas.width / fontsize;
+  var drop = [];
+  for(var x = 0; x < columns; x++) {
+    drop[x] = Math.random() * matrixCanvas.height / fontsize;
+  }
+  
+  function drawMatrixRain() {
+    // 使用更透明的填充让背景图片更可见
+    matrixCtx.fillStyle = "rgba(0,0,0,0.05)"; // 调整为更合适的透明度
+    matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+    
+    // 更新颜色偏移
+    colorOffset = (colorOffset + 0.01) % 7;
+    
+    for(var i = 0; i < drop.length; i++) {
+      var text1 = chars[Math.floor(Math.random() * chars.length)];
+      
+      // 绘制静态炫彩文字
+      matrixCtx.font = fontsize + "px 宋体";
+      
+      // 创建静态渐变
+      const staticGradient = matrixCtx.createLinearGradient(
+        i * fontsize - 50, drop[i] * fontsize - 10,
+        i * fontsize + 50, drop[i] * fontsize + 10
+      );
+      staticGradient.addColorStop(0, getRainbowColor(colorOffset + i * 0.1));
+      staticGradient.addColorStop(0.5, getRainbowColor(colorOffset + i * 0.1 + 2));
+      staticGradient.addColorStop(1, getRainbowColor(colorOffset + i * 0.1 + 4));
+      
+      matrixCtx.fillStyle = staticGradient;
+      matrixCtx.globalAlpha = 0.9; // 提高文字不透明度
+      matrixCtx.fillText(text1, i * fontsize, drop[i] * fontsize);
+      
+      // 绘制移动的炫彩流光效果
+      var gradient = matrixCtx.createLinearGradient(
+        gradientOffsets[0] - 50 + i * 10, drop[i] * fontsize - 10,
+        gradientOffsets[0] + 50 + i * 10, drop[i] * fontsize + 10
+      );
+      gradient.addColorStop(0, 'rgba(255,255,255,0)');
+      gradient.addColorStop(0.3, getRainbowColor(colorOffset + 2));
+      gradient.addColorStop(0.5, '#ffffff');
+      gradient.addColorStop(0.7, getRainbowColor(colorOffset + 4));
+      gradient.addColorStop(1, 'rgba(255,255,255,0)');
+      
+      matrixCtx.save();
+      matrixCtx.globalCompositeOperation = 'lighter';
+      matrixCtx.globalAlpha = 0.8; // 提高流光不透明度
+      matrixCtx.fillStyle = gradient;
+      matrixCtx.fillText(text1, i * fontsize, drop[i] * fontsize);
+      matrixCtx.restore();
+      
+      drop[i]++;
+      if(drop[i] * fontsize > matrixCanvas.height && Math.random() > 0.9) {
+        drop[i] = 0;
+      }
+    }
+    
+    // 更新矩阵雨的流光位置
+    gradientOffsets[0] = (gradientOffsets[0] + 1) % (matrixCanvas.width + 100);
+  }
+  setInterval(drawMatrixRain, 50);
+
+  /*
+   * 爱心粒子效果设置
+   */
+  var settings = {
+    particles: {
+      length:   500, // 最大粒子数
+      duration:   2, // 粒子持续时间(秒)
+      velocity: 100, // 粒子速度(像素/秒)
+      effect: -0.75, // 特效参数
+      size:      20, // 粒子大小(像素)
+    },
+  };
+ 
+  /*
+   * RequestAnimationFrame polyfill by Erik Möller
+   */
+  (function(){var b=0;var c=["ms","moz","webkit","o"];for(var a=0;a<c.length&&!window.requestAnimationFrame;++a){window.requestAnimationFrame=window[c[a]+"RequestAnimationFrame"];window.cancelAnimationFrame=window[c[a]+"CancelAnimationFrame"]||window[c[a]+"CancelRequestAnimationFrame"]}if(!window.requestAnimationFrame){window.requestAnimationFrame=function(h,e){var d=new Date().getTime();var f=Math.max(0,16-(d-b));var g=window.setTimeout(function(){h(d+f)},f);b=d+f;return g}}if(!window.cancelAnimationFrame){window.cancelAnimationFrame=function(d){clearTimeout(d)}}}());
+ 
+  /*
+   * Point class
+   */
+  var Point = (function() {
+    function Point(x, y) {
+      this.x = (typeof x !== 'undefined') ? x : 0;
+      this.y = (typeof y !== 'undefined') ? y : 0;
+    }
+    Point.prototype.clone = function() {
+      return new Point(this.x, this.y);
+    };
+    Point.prototype.length = function(length) {
+      if (typeof length == 'undefined')
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+      this.normalize();
+      this.x *= length;
+      this.y *= length;
+      return this;
+    };
+    Point.prototype.normalize = function() {
+      var length = this.length();
+      this.x /= length;
+      this.y /= length;
+      return this;
+    };
+    return Point;
+  })();
+ 
+  /*
+   * Particle class
+   */
+  var Particle = (function() {
+    function Particle() {
+      this.position = new Point();
+      this.velocity = new Point();
+      this.acceleration = new Point();
+      this.age = 0;
+    }
+    Particle.prototype.initialize = function(x, y, dx, dy) {
+      this.position.x = x;
+      this.position.y = y;
+      this.velocity.x = dx;
+      this.velocity.y = dy;
+      this.acceleration.x = dx * settings.particles.effect;
+      this.acceleration.y = dy * settings.particles.effect;
+      this.age = 0;
+    };
+    Particle.prototype.update = function(deltaTime) {
+      this.position.x += this.velocity.x * deltaTime;
+      this.position.y += this.velocity.y * deltaTime;
+      this.velocity.x += this.acceleration.x * deltaTime;
+      this.velocity.y += this.acceleration.y * deltaTime;
+      this.age += deltaTime;
+    };
+    Particle.prototype.draw = function(context, image) {
+      function ease(t) {
+        return (--t) * t * t + 1;
+      }
+      var size = image.width * ease(this.age / settings.particles.duration);
+      context.globalAlpha = 1 - this.age / settings.particles.duration;
+      context.drawImage(image, this.position.x - size / 2, this.position.y - size / 2, size, size);
+    };
+    return Particle;
+  })();
+ 
+  /*
+   * ParticlePool class
+   */
+  var ParticlePool = (function() {
+    var particles,
+        firstActive = 0,
+        firstFree   = 0,
+        duration    = settings.particles.duration;
+    
+    function ParticlePool(length) {
+      particles = new Array(length);
+      for (var i = 0; i < particles.length; i++)
+        particles[i] = new Particle();
+    }
+    ParticlePool.prototype.add = function(x, y, dx, dy) {
+      particles[firstFree].initialize(x, y, dx, dy);
+      
+      firstFree++;
+      if (firstFree   == particles.length) firstFree   = 0;
+      if (firstActive == firstFree       ) firstActive++;
+      if (firstActive == particles.length) firstActive = 0;
+    };
+    ParticlePool.prototype.update = function(deltaTime) {
+      var i;
+      
+      if (firstActive < firstFree) {
+        for (i = firstActive; i < firstFree; i++)
+          particles[i].update(deltaTime);
+      }
+      if (firstFree < firstActive) {
+        for (i = firstActive; i < particles.length; i++)
+          particles[i].update(deltaTime);
+        for (i = 0; i < firstFree; i++)
+          particles[i].update(deltaTime);
+      }
+      
+      while (particles[firstActive].age >= duration && firstActive != firstFree) {
+        firstActive++;
+        if (firstActive == particles.length) firstActive = 0;
+      }
+    };
+    ParticlePool.prototype.draw = function(context, image) {
+      if (firstActive < firstFree) {
+        for (i = firstActive; i < firstFree; i++)
+          particles[i].draw(context, image);
+      }
+      if (firstFree < firstActive) {
+        for (i = firstActive; i < particles.length; i++)
+          particles[i].draw(context, image);
+        for (i = 0; i < firstFree; i++)
+          particles[i].draw(context, image);
+      }
+    };
+    return ParticlePool;
+  })();
+ 
+  /*
+   * 主渲染函数
+   */
+  (function(canvas) {
+    var context = canvas.getContext('2d'),
+        particles = new ParticlePool(settings.particles.length),
+        particleRate = settings.particles.length / settings.particles.duration,
+        time;
+    
+    // 爱心形状函数
+    function pointOnHeart(t) {
+      return new Point(
+        180 * Math.pow(Math.sin(t), 3),
+        140 * Math.cos(t) - 50 * Math.cos(2 * t) - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t) + 25
+      );
+    }
+    
+    // 创建粒子图像
+    var image = (function() {
+      var canvas  = document.createElement('canvas'),
+          context = canvas.getContext('2d');
+      canvas.width  = settings.particles.size;
+      canvas.height = settings.particles.size;
+      
+      function to(t) {
+        var point = pointOnHeart(t);
+        point.x = settings.particles.size / 2 + point.x * settings.particles.size / 350;
+        point.y = settings.particles.size / 2 - point.y * settings.particles.size / 350;
+        return point;
+      }
+      
+      context.beginPath();
+      var t = -Math.PI;
+      var point = to(t);
+      context.moveTo(point.x, point.y);
+      while (t < Math.PI) {
+        t += 0.01;
+        point = to(t);
+        context.lineTo(point.x, point.y);
+      }
+      context.closePath();
+      context.fillStyle = '#ea80b0';
+      context.fill();
+      var image = new Image();
+      image.src = canvas.toDataURL();
+      return image;
+    })();
+    
+    // 点击文字区域
+    var clickableText = null;
+    
+    // 绘制炫彩文字函数
+    function drawRainbowText(text, x, y, fontSize, fontFamily, gradientOffset, isClickable) {
+      // 1. 绘制静态炫彩文字
+      const staticGradient = context.createLinearGradient(
+        x - 200, y - fontSize/2,
+        x + 200, y + fontSize/2
+      );
+      
+      // 添加彩虹色渐变
+      staticGradient.addColorStop(0, getRainbowColor(colorOffset));
+      staticGradient.addColorStop(0.2, getRainbowColor(colorOffset + 1));
+      staticGradient.addColorStop(0.4, getRainbowColor(colorOffset + 2));
+      staticGradient.addColorStop(0.6, getRainbowColor(colorOffset + 3));
+      staticGradient.addColorStop(0.8, getRainbowColor(colorOffset + 4));
+      staticGradient.addColorStop(1, getRainbowColor(colorOffset + 5));
+      
+      context.font = `bold ${fontSize}px ${fontFamily}`;
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillStyle = staticGradient;
+      context.shadowBlur = 15;
+      context.shadowColor = "rgba(255,255,255,0.5)";
+      context.globalAlpha = 1; // 恢复文字完全不透明
+      context.fillText(text, x, y);
+      
+      // 2. 创建移动的炫彩流光效果
+      const movingGradient = context.createLinearGradient(
+        gradientOffset - 200, y - fontSize/2,
+        gradientOffset + 200, y + fontSize/2
+      );
+      
+      movingGradient.addColorStop(0, 'rgba(255,255,255,0)');
+      movingGradient.addColorStop(0.3, getRainbowColor(colorOffset + 2));
+      movingGradient.addColorStop(0.5, '#ffffff');
+      movingGradient.addColorStop(0.7, getRainbowColor(colorOffset + 4));
+      movingGradient.addColorStop(1, 'rgba(255,255,255,0)');
+      
+      // 3. 绘制移动的流光效果
+      context.save();
+      context.globalCompositeOperation = 'lighter';
+      context.globalAlpha = 0.9; // 提高流光不透明度
+      context.fillStyle = movingGradient;
+      context.fillText(text, x, y);
+      context.restore();
+      
+      // 如果是可点击文字，设置点击区域
+      if (isClickable) {
+        const textMetrics = context.measureText(text);
+        clickableText = {
+          x: x - textMetrics.width / 2,
+          y: y - fontSize/2,
+          width: textMetrics.width,
+          height: fontSize,
+          url: "./jht.html"
+        };
+      }
+    }
+    
+    // 主渲染循环
+    function render() {
+      requestAnimationFrame(render);
+      
+      var newTime = new Date().getTime() / 1000,
+          deltaTime = newTime - (time || newTime);
+      time = newTime;
+      
+      // 清除画布时使用完全透明，让背景图片显示
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // 更新颜色偏移
+      colorOffset = (colorOffset + deltaTime * 0.5) % 7;
+      
+      // 创建新粒子
+      var amount = particleRate * deltaTime;
+      for (var i = 0; i < amount; i++) {
+        var pos = pointOnHeart(Math.PI - 2 * Math.PI * Math.random());
+        var dir = pos.clone().length(settings.particles.velocity);
+        particles.add(canvas.width / 2 + pos.x, canvas.height / 2 - pos.y, dir.x, -dir.y);
+      }
+      
+      // 更新和绘制粒子
+      particles.update(deltaTime);
+      particles.draw(context, image);
+      
+      // 更新流光位置
+      gradientOffsets[1] = (gradientOffsets[1] + 2) % (canvas.width + 400);
+      gradientOffsets[2] = (gradientOffsets[2] + 1.6) % (canvas.width + 400);
+      
+      // 绘制"I LOVE YOU"文字
+      drawRainbowText(
+        "I   LOVE   YOU", 
+        canvas.width / 2, 
+        canvas.height / 2 - 300, 
+        60, 
+        "'Times New Roman', 'Microsoft YaHei', sans-serif",
+        gradientOffsets[1],
+        false
+      );
+      
+      // 绘制"江慧甜"文字
+      drawRainbowText(
+        "江慧甜", 
+        canvas.width / 2, 
+        canvas.height / 2-20, 
+        36, 
+        "'宋体', sans-serif",
+        gradientOffsets[2],
+        true
+      );
+    }
+    
+    // 点击事件处理
+    canvas.addEventListener('click', function(event) {
+      if (!clickableText) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      
+      if (x >= clickableText.x && 
+          x <= clickableText.x + clickableText.width &&
+          y >= clickableText.y && 
+          y <= clickableText.y + clickableText.height) {
+        window.location.href = clickableText.url;
+      }
+    });
+    
+    // 窗口大小调整
+    function onResize() {
+      matrixCanvas.width = window.innerWidth;
+      matrixCanvas.height = window.innerHeight;
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+      
+      // 重置矩阵雨参数
+      columns = matrixCanvas.width / fontsize;
+      drop = [];
+      for(var x = 0; x < columns; x++) {
+        drop[x] = Math.random() * matrixCanvas.height / fontsize;
+      }
+    }
+    window.onresize = onResize;
+    
+    // 启动动画
+    setTimeout(function() {
+      onResize();
+      render();
+    }, 10);
+  })(document.getElementById('pinkboard'));
+  </script>
+ </BODY>
+</HTML>
